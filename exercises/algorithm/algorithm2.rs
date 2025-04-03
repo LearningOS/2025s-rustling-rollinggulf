@@ -2,20 +2,20 @@
 	double linked list reverse
 	This problem requires you to reverse a doubly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
 #[derive(Debug)]
-struct Node<T> {
+struct Node<T: Clone> {
     val: T,
     next: Option<NonNull<Node<T>>>,
     prev: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Node<T> {
+impl<T: Clone> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -25,19 +25,19 @@ impl<T> Node<T> {
     }
 }
 #[derive(Debug)]
-struct LinkedList<T> {
+struct LinkedList<T: Clone> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -72,12 +72,36 @@ impl<T> LinkedList<T> {
             },
         }
     }
+
+    pub fn set(&mut self, index: i32, val: T) {
+        
+        let mut cur_index = 0;
+        let mut cur_node = self.start;
+        while cur_index != index {
+            let next_node = unsafe{ (*cur_node.unwrap().as_ptr()).next };
+            cur_node = next_node;
+            cur_index += 1;
+        }
+        unsafe{ (*cur_node.unwrap().as_mut()).val = val };
+    }
+
 	pub fn reverse(&mut self){
-		// TODO
+		let mut ptr_1: i32 = 0;
+        let mut ptr_2: i32 = self.length as i32 - 1;
+        while ptr_1 < ptr_2 {
+            let temp_2 = self.get(ptr_2).unwrap().clone();
+            let temp_1 = self.get(ptr_1).unwrap().clone();
+            self.set(ptr_2, temp_1);
+            self.set(ptr_1, temp_2);
+
+            ptr_1 += 1;
+            ptr_2 -= 1;
+        }
+
 	}
 }
 
-impl<T> Display for LinkedList<T>
+impl<T: Clone> Display for LinkedList<T>
 where
     T: Display,
 {
@@ -89,7 +113,7 @@ where
     }
 }
 
-impl<T> Display for Node<T>
+impl<T: Clone> Display for Node<T>
 where
     T: Display,
 {
