@@ -3,7 +3,7 @@
 	This question requires you to use a stack to achieve a bracket match
 */
 
-// I AM NOT DONE
+
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -31,7 +31,11 @@ impl<T> Stack<T> {
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
-		// TODO
+		if self.size > 0 {
+			let res = self.data.pop().unwrap();
+			self.size -= 1;
+			return Some(res)
+		}
 		None
 	}
 	fn peek(&self) -> Option<&T> {
@@ -101,7 +105,51 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
-	//TODO
+	// let mut round_bracket_stack = Stack::new();
+	// let mut square_bracket_stack = Stack::new();
+	// let mut curly_bracket_stack = Stack::new();
+
+	let mut bracket_stack = Stack::new();
+
+	for cur_char in bracket.chars() {
+		match cur_char {
+			'(' => {bracket_stack.push('(');}
+			'[' => {bracket_stack.push('[');}
+			'{' => {bracket_stack.push('{');}
+			')' => {
+				if let Some(bracket) = bracket_stack.pop() {
+					if bracket != '(' {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			']' => {
+				if let Some(bracket) = bracket_stack.pop() {
+					if bracket != '[' {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			'}' => {
+				if let Some(bracket) = bracket_stack.pop() {
+					if bracket != '{' {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			_ => {}
+		}
+		
+	}
+	if bracket_stack.len() > 0 {
+		return false
+	}
 	true
 }
 

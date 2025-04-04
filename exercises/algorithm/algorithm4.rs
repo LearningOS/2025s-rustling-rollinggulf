@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -11,7 +11,7 @@ use std::fmt::Debug;
 #[derive(Debug)]
 struct TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
     value: T,
     left: Option<Box<TreeNode<T>>>,
@@ -21,14 +21,14 @@ where
 #[derive(Debug)]
 struct BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
     root: Option<Box<TreeNode<T>>>,
 }
 
-impl<T> TreeNode<T>
+impl<T: Clone> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
     fn new(value: T) -> Self {
         TreeNode {
@@ -39,9 +39,9 @@ where
     }
 }
 
-impl<T> BinarySearchTree<T>
+impl<T: Clone> BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
 
     fn new() -> Self {
@@ -50,19 +50,52 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        if self.search(value.clone()) {return}
+
+        if self.root.is_none() {
+            self.root = Some(Box::new(TreeNode::new(value)));
+            return
+        } 
+
+        let mut cur_node_opt = &mut self.root;
+        while let Some(node) = cur_node_opt {
+            if node.value < value {
+                if let Some(_) = node.right {
+                    cur_node_opt = &mut node.right;
+                } else {
+                    node.right = Some(Box::new(TreeNode::new(value)));
+                    break;
+                }
+            } else {
+                if let Some(_) = node.left {
+                    cur_node_opt = &mut node.left;
+                } else {
+                    node.left = Some(Box::new(TreeNode::new(value)));
+                    break;
+                }
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        let mut cur_node_opt = &self.root;
+        while let Some(node) = cur_node_opt {
+            if node.value == value {
+                return true
+            } else if node.value < value {
+                cur_node_opt = &node.right;
+            } else {
+                cur_node_opt = &node.left;
+            }
+        }
+        false
     }
 }
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
